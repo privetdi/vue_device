@@ -15,7 +15,7 @@ export async function getData<TResponse>(path: string): Promise<TResponse> {
             store.commit('setError', false)
             return res.data;
         } else {
-            throw new Error('no validate user');
+            throw new Error('no user data');
         }
     } catch (error) {
         console.error('Error:', error);
