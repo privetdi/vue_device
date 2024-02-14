@@ -1,15 +1,37 @@
 <script setup lang="ts">
-import IDevice from '../api/type';
+import { computed, ref } from 'vue';
+import { IDevice, ILogResponse, ILog } from '../api/type';
+import store from '../store/store';
+import { getData } from '../api/fetch';
 
 
+const logs = ref<ILog[]>([]);
+const modalVisible = ref(false);
 
-const { id, uuid, name, type, created_at, updated_at, install, count_requests } = defineProps<IDevice>();
+const { id, uuid, name, type, created_at, updated_at, install, count_requests, cb } = defineProps<IDeviceCard>();
+
+
+interface IDeviceCard extends IDevice {
+    cb: (device: number) => void;
+}
+
+const isInFavorites = computed(() => store.state.favorites.includes(id));
+const openModal = async () => {
+    modalVisible.value = !modalVisible.value;
+    if (modalVisible.value) {
+        const logsRequest = await getData<ILogResponse>(`/api/devices/${id}/logs`);
+        logs.value = logsRequest.logs
+    }
+
+};
 
 </script>
 
 <template>
-    <div class="cardDevice">
+    <div class="cardDevice" @click="cb(id)">
+        <div class="cell" v-if="isInFavorites" style="width: 30px;">*</div>
         <div class="cell">id {{ id }}</div>
+        <div><router-link :to="{ name: 'requestsId', params: { id: id } }">request</router-link></div>
         <div class="cell">uuid {{ uuid }}</div>
         <div class="cell">name {{ name }}</div>
         <div class="cell">type {{ type }}</div>
@@ -17,6 +39,28 @@ const { id, uuid, name, type, created_at, updated_at, install, count_requests } 
         <div class="cell">updated_at {{ updated_at }}</div>
         <div class="cell">install {{ install }}</div>
         <div class="cell">count_requests {{ count_requests }}</div>
+    </div>
+    <button @click="openModal">logs</button>
+    <div v-if="modalVisible">
+        <div>Логи</div>
+        <div v-if="logs.length === 0">Loading...</div>
+        <div v-else>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Сообщение</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="log in logs" :key="log.id">
+                        <td>{{ log.created_at }}</td>
+                        <td>{{ log.message }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
     </div>
 </template>
 

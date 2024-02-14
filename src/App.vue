@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import Authorization from './components/Authorization.vue';
-import Table from './components/Table.vue';
 import store from './store/store';
 
 const isError = computed(() => store.state.isError);
@@ -10,7 +9,10 @@ const isError = computed(() => store.state.isError);
 <template>
   <div>
     <Authorization v-if="isError" />
-    <Table v-else />
+    <div v-else>
+      <router-view></router-view>
+    </div>
+
   </div>
 </template>
 
