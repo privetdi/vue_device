@@ -4,12 +4,10 @@ import { IDevice, ILogResponse, ILog } from '../api/type';
 import store from '../store/store';
 import { getData } from '../api/fetch';
 
-
 const logs = ref<ILog[]>([]);
 const modalVisible = ref(false);
 
 const { id, uuid, name, type, created_at, updated_at, install, count_requests, cb } = defineProps<IDeviceCard>();
-
 
 interface IDeviceCard extends IDevice {
     cb: (device: number) => void;

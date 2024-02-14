@@ -1,5 +1,5 @@
 import { createStore } from "vuex";
-import IDevice from '../api/type'
+import { IDevice } from '../api/type'
 
 interface IAuthorization {
     login: string | null;
